@@ -9,6 +9,8 @@ using RWCustom;
 
 public class UrbanAbyss : PartialityMod
 {
+    public static PowerCycle powerCycle;
+
     public override void Init()
     {
         this.ModID = "UrbanAbyss";
@@ -21,6 +23,23 @@ public class UrbanAbyss : PartialityMod
         On.Room.Loaded += Room_LoadedHK;
         On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRepHK;
         On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyDataHK;
+        On.RainCycle.ctor += RainCycle_ctorHK;
+        On.RainCycle.Update += RainCycle_UpdateHK;
+    }
+
+    private void RainCycle_ctorHK(On.RainCycle.orig_ctor orig, RainCycle self, World world, float minutes)
+    {
+        orig(self, world, minutes);
+        UrbanAbyss.powerCycle = null;
+    }
+
+    private void RainCycle_UpdateHK(On.RainCycle.orig_Update orig, RainCycle self)
+    {
+        orig(self);
+        if (UrbanAbyss.powerCycle != null)
+        {
+            UrbanAbyss.powerCycle.Update();
+        }
     }
 
     private void PlacedObject_GenerateEmptyDataHK(On.PlacedObject.orig_GenerateEmptyData orig, PlacedObject self)
@@ -67,6 +86,16 @@ public class UrbanAbyss : PartialityMod
                     self.AddObject(LB);
                     LB.colorFromEnvironment = ((self.roomSettings.placedObjects[l].data as ColoredLightBeam.ColoredLightBeamData).colorType == ColoredLightBeam.ColoredLightBeamData.ColorType.Environment);
                     LB.effectColor = Math.Max(-1, (self.roomSettings.placedObjects[l].data as ColoredLightBeam.ColoredLightBeamData).colorType - ColoredLightBeam.ColoredLightBeamData.ColorType.EffectColor1);
+                }
+            }
+        }
+        for (int k = 0; k < self.roomSettings.effects.Count; k++)
+        { 
+            if (self.roomSettings.effects[k].type == EnumExt_UrbanAbyss.PowerCycle)
+            {
+                if (UrbanAbyss.powerCycle == null)
+                {
+                    UrbanAbyss.powerCycle = new PowerCycle(self);
                 }
             }
         }

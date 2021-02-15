@@ -16,3 +16,21 @@ A:\Rain World Modding\Region Jam\UrbanAbyss\UrbanAbyss\UrbanAbyss\bin\Debug\Urba
 A:\Rain World Modding\Region Jam\UrbanAbyss\UrbanAbyss\UrbanAbyss\bin\Debug\UrbanAbyss.pdb
 A:\Rain World Modding\Region Jam\UrbanAbyss\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.dll
 A:\Rain World Modding\Region Jam\UrbanAbyss\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.pdb
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\UrbanAbyss.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\UrbanAbyss.pdb
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\EnumExtender.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\GoKit.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\HOOKS-Assembly-CSharp.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\Mono.Security.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\MonoMod.exe
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\MonoMod.RuntimeDetour.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\MonoMod.Utils.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\Partiality.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\UnityEngine.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\UnityEngine.UI.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\bin\Debug\YamlDotNet.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.csprojAssemblyReference.cache
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.csproj.CoreCompileInputs.cache
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.csproj.CopyComplete
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.dll
+A:\UrbanAbyssThing\UrbanAbyss\UrbanAbyss\obj\Debug\UrbanAbyss.pdb

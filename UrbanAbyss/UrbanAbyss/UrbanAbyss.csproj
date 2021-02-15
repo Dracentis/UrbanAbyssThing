@@ -85,6 +85,7 @@
     <Compile Include="ColoredLightBeam.cs" />
     <Compile Include="ColoredLightBeamRepresentation.cs" />
     <Compile Include="EnumExt_UrbanAbyss.cs" />
+    <Compile Include="PowerCycle.cs" />
     <Compile Include="UrbanAbyss.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
