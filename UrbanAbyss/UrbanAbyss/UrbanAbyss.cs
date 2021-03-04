@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using DevInterface;
 using On;
+using System.IO;
 using Partiality.Modloader;
 using UnityEngine;
 using RWCustom;
-
+using System.Collections;
 
 public class UrbanAbyss : PartialityMod
 {
     public static PowerCycle powerCycle;
+
+    public static WWW generatorPowerUp;
+    public static WWW generatorPowerDown;
 
     public override void Init()
     {
@@ -20,12 +24,83 @@ public class UrbanAbyss : PartialityMod
     public override void OnLoad()
     {
         base.OnLoad();
+        generatorPowerUp = new WWW("file://" + string.Concat(new object[]
+            {
+                Custom.RootFolderDirectory(),
+                "Assets",
+                Path.DirectorySeparatorChar,
+                "Futile",
+                Path.DirectorySeparatorChar,
+                "Resources",
+                Path.DirectorySeparatorChar,
+                "LoadedSoundEffects",
+                Path.DirectorySeparatorChar,
+                "GeneratorPowerUp",
+                ".wav"
+            }));
+        generatorPowerDown = new WWW("file://" + string.Concat(new object[]
+            {
+                Custom.RootFolderDirectory(),
+                "Assets",
+                Path.DirectorySeparatorChar,
+                "Futile",
+                Path.DirectorySeparatorChar,
+                "Resources",
+                Path.DirectorySeparatorChar,
+                "LoadedSoundEffects",
+                Path.DirectorySeparatorChar,
+                "GeneratorPowerDown",
+                ".wav"
+            }));
         On.Room.Loaded += Room_LoadedHK;
         On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRepHK;
         On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyDataHK;
         On.RainCycle.ctor += RainCycle_ctorHK;
         On.RainCycle.Update += RainCycle_UpdateHK;
+        On.SoundLoader.GetAudioClip += SoundLoader_GetAudioClip;
+        On.LightSource.DrawSprites += LightSource_DrawSprites;
     }
+
+    private void LightSource_DrawSprites(On.LightSource.orig_DrawSprites orig, LightSource self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    {
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+        if (!self.slatedForDeletetion)
+        {
+            if (self.room != null && self.room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f && powerCycle != null)
+            {
+                for (int i = 0; i < sLeaser.sprites.Length; i++)
+                {
+                    sLeaser.sprites[i].alpha = powerCycle.power * sLeaser.sprites[i].alpha;
+                }
+            }
+        }
+    }
+
+    private AudioClip SoundLoader_GetAudioClip(On.SoundLoader.orig_GetAudioClip orig, SoundLoader self, int i)
+    {
+        if (i == self.GetSoundData(EnumExt_UrbanAbyss.GeneratorPowerUp).audioClip)
+        {
+            if (generatorPowerUp.audioClip.isReadyToPlay)
+            {
+                AudioClip clip = generatorPowerUp.GetAudioClip(false);
+                clip.name = "GeneratorPowerUp";
+                Debug.Log(clip != null);
+                return clip;
+            }
+        }
+        else if (i == self.GetSoundData(EnumExt_UrbanAbyss.GeneratorPowerDown).audioClip)
+        {
+            if (generatorPowerDown.audioClip.isReadyToPlay)
+            {
+                AudioClip clip = generatorPowerDown.GetAudioClip(false);
+                clip.name = "GeneratorPowerDown";
+                Debug.Log(clip != null);
+                return clip;
+            }
+        } 
+        return orig(self, i);
+    }
+
 
     private void RainCycle_ctorHK(On.RainCycle.orig_ctor orig, RainCycle self, World world, float minutes)
     {
@@ -93,7 +168,7 @@ public class UrbanAbyss : PartialityMod
         { 
             if (self.roomSettings.effects[k].type == EnumExt_UrbanAbyss.PowerCycle)
             {
-                if (UrbanAbyss.powerCycle == null)
+                if (UrbanAbyss.powerCycle == null || UrbanAbyss.powerCycle.game == null)
                 {
                     UrbanAbyss.powerCycle = new PowerCycle(self);
                 }

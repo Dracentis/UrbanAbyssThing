@@ -2,7 +2,6 @@
 using RWCustom;
 using UnityEngine;
 
-// Token: 0x020003CA RID: 970
 public class PowerCycle : UpdatableAndDeletable
 {
 	public PowerCycle(Room room) : base()
@@ -13,38 +12,59 @@ public class PowerCycle : UpdatableAndDeletable
 
 		//RainWorldGame
 		this.game = room.game;
+		this.counter = 10;
+		this.progress = 0f;
 
 		this.on = (UnityEngine.Random.value < 0.5f);
 		this.from = ((!this.on) ? 0f : 1f);
 		this.to = ((!this.on) ? 0f : 1f);
 	}
 
-		public void Update()
+	public void Update()
+	{
+		if (this.game == null || this.game.cameras == null)
+			return;
+		this.counter--;
+		if (this.counter < 1)
 		{
-			this.counter--;
-			if (this.counter < 1)
-			{
-				this.on = !this.on;
-				this.counter = UnityEngine.Random.Range(this.cycleMin * 40, this.cycleMax * 40);
-				this.from = this.to;
-				this.to = ((!this.on) ? 0f : 1f);
-				this.progress = 0f;
+			this.on = !this.on;
+			this.counter = UnityEngine.Random.Range(this.cycleMin * 40, this.cycleMax * 40);
+			this.from = this.to;
+			this.to = ((!this.on) ? 0f : 1f);
+			this.progress = 0f;
+
 			// This next block is for playing a sound when powering on or off
-			/*
 			for (int i = 0; i < this.game.cameras.Length; i++)
 			{
 				if (this.game.cameras[i].room != null && this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f)
 				{
-					this.game.cameras[i].room.PlaySound((!this.on) ? SoundID.Broken_Anti_Gravity_Switch_Off : SoundID.Broken_Anti_Gravity_Switch_On, 0f, this.game.cameras[i].room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.BrokenZeroG), 1f);
+					this.game.cameras[i].room.PlaySound((!this.on) ? EnumExt_UrbanAbyss.GeneratorPowerDown : EnumExt_UrbanAbyss.GeneratorPowerUp, 0f, this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle), 1f);
 				}
 			}
-			*/
 		}
 
 		// Switch on or off.
 		if (this.progress < 1f)
 		{
 			this.progress = Mathf.Min(1f, this.progress + 0.008333334f);
+		}
+
+		if (this.game.cameras[0].room != null && this.game.cameras[0].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f)
+        {
+			if (this.to == 1f)
+			{
+				if (this.progress > 0.2f)
+				{
+					this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(this.game.cameras[0].room.roomSettings.EffectColorA, this.game.cameras[0].room.roomSettings.EffectColorB);
+				}
+			}
+            else
+			{
+				if (this.progress > 0.8f)
+				{
+					this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(22, 22);
+				}
+			}
 		}
 		
 
@@ -61,19 +81,7 @@ public class PowerCycle : UpdatableAndDeletable
 		}
 	}
 
-	/*
-		if (this.progress < 1f) {
-			if (UnityEngine.Random.value < 0.125f)
-			{
-				this.lightsGetTo = Mathf.Lerp(this.from, this.to, Mathf.Pow(UnityEngine.Random.value * Mathf.Pow(Mathf.InverseLerp(0f, 0.5f, this.progress), 0.5f), Custom.LerpMap(this.progress, 0f, 0.6f, 1f, 0f)));
-			}
-		}
-		else
-		{
-			this.lightsGetTo = this.to;
-		}
-		this.lights = Custom.LerpAndTick(this.lights, this.lightsGetTo, 0.15f, 0.00083333335f); // Update light flickering
-	 */
+
 	public float power
 	{
 		get
@@ -83,8 +91,8 @@ public class PowerCycle : UpdatableAndDeletable
 	}
 
 	public int counter; // Countdown to power state change
-	public bool on; // Power on?
-	public float from;
+	public bool on; // is power on
+	public float from; 
 	public float to;
 	public float progress; // From 0f to 1f (1f is full power)
 	public int cycleMin;
