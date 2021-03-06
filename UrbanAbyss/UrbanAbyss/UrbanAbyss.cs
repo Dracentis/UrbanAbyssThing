@@ -14,6 +14,8 @@ public class UrbanAbyss : PartialityMod
 
     public static WWW generatorPowerUp;
     public static WWW generatorPowerDown;
+    public static WWW generatorPowerUpFar;
+    public static WWW generatorPowerDownFar;
 
     public override void Init()
     {
@@ -52,6 +54,34 @@ public class UrbanAbyss : PartialityMod
                 "GeneratorPowerDown",
                 ".wav"
             }));
+        generatorPowerUpFar = new WWW("file://" + string.Concat(new object[]
+            {
+                Custom.RootFolderDirectory(),
+                "Assets",
+                Path.DirectorySeparatorChar,
+                "Futile",
+                Path.DirectorySeparatorChar,
+                "Resources",
+                Path.DirectorySeparatorChar,
+                "LoadedSoundEffects",
+                Path.DirectorySeparatorChar,
+                "GeneratorPowerUpFar",
+                ".wav"
+            }));
+        generatorPowerDownFar = new WWW("file://" + string.Concat(new object[]
+            {
+                Custom.RootFolderDirectory(),
+                "Assets",
+                Path.DirectorySeparatorChar,
+                "Futile",
+                Path.DirectorySeparatorChar,
+                "Resources",
+                Path.DirectorySeparatorChar,
+                "LoadedSoundEffects",
+                Path.DirectorySeparatorChar,
+                "GeneratorPowerDownFar",
+                ".wav"
+            }));
         On.Room.Loaded += Room_LoadedHK;
         On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRepHK;
         On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyDataHK;
@@ -64,13 +94,25 @@ public class UrbanAbyss : PartialityMod
     private void LightSource_DrawSprites(On.LightSource.orig_DrawSprites orig, LightSource self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
-        if (!self.slatedForDeletetion)
+        if (!self.slatedForDeletetion && !self.fadeWithSun)
         {
             if (self.room != null && self.room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f && powerCycle != null)
             {
-                for (int i = 0; i < sLeaser.sprites.Length; i++)
+                if (powerCycle.linearPower < 1f && powerCycle.linearPower > 0f)
                 {
-                    sLeaser.sprites[i].alpha = powerCycle.power * sLeaser.sprites[i].alpha;
+                    float flicker = Mathf.Clamp(powerCycle.linearPower * 2f - Mathf.PerlinNoise(self.Pos.x*100f, self.Pos.y*100f),0f,1f);
+                    flicker = flicker+(Mathf.Pow(flicker,0.1f)*(1f-flicker)*Mathf.Pow(Mathf.Sin(30f/(flicker+0.4f)),2f));
+                    for (int i = 0; i < sLeaser.sprites.Length; i++)
+                    {
+                        sLeaser.sprites[i].alpha = flicker * sLeaser.sprites[i].alpha;
+                    }
+                }
+                else if (powerCycle.linearPower == 0f)
+                {
+                    for (int i = 0; i < sLeaser.sprites.Length; i++)
+                    {
+                        sLeaser.sprites[i].alpha = 0f;
+                    }
                 }
             }
         }
@@ -97,7 +139,27 @@ public class UrbanAbyss : PartialityMod
                 Debug.Log(clip != null);
                 return clip;
             }
-        } 
+        }
+        else if (i == self.GetSoundData(EnumExt_UrbanAbyss.GeneratorPowerUpFar).audioClip)
+        {
+            if (generatorPowerUpFar.audioClip.isReadyToPlay)
+            {
+                AudioClip clip = generatorPowerUpFar.GetAudioClip(false);
+                clip.name = "GeneratorPowerUpFar";
+                Debug.Log(clip != null);
+                return clip;
+            }
+        }
+        else if (i == self.GetSoundData(EnumExt_UrbanAbyss.GeneratorPowerDownFar).audioClip)
+        {
+            if (generatorPowerDownFar.audioClip.isReadyToPlay)
+            {
+                AudioClip clip = generatorPowerDownFar.GetAudioClip(false);
+                clip.name = "GeneratorPowerDownFar";
+                Debug.Log(clip != null);
+                return clip;
+            }
+        }
         return orig(self, i);
     }
 

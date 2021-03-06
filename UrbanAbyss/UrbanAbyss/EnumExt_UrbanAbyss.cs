@@ -6,4 +6,6 @@ public class EnumExt_UrbanAbyss
     public static RoomSettings.RoomEffect.Type PowerCycle;
     public static SoundID GeneratorPowerUp;
     public static SoundID GeneratorPowerDown;
+    public static SoundID GeneratorPowerUpFar;
+    public static SoundID GeneratorPowerDownFar;
 }

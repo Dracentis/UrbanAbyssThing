@@ -38,7 +38,8 @@ public class PowerCycle : UpdatableAndDeletable
 			{
 				if (this.game.cameras[i].room != null && this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f)
 				{
-					this.game.cameras[i].room.PlaySound((!this.on) ? EnumExt_UrbanAbyss.GeneratorPowerDown : EnumExt_UrbanAbyss.GeneratorPowerUp, 0f, this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle), 1f);
+					this.game.cameras[i].room.PlaySound((!this.on) ? EnumExt_UrbanAbyss.GeneratorPowerDown : EnumExt_UrbanAbyss.GeneratorPowerUp, 0f, 0.5f*this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle)* this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle), 1f);
+					this.game.cameras[i].room.PlaySound((!this.on) ? EnumExt_UrbanAbyss.GeneratorPowerDownFar : EnumExt_UrbanAbyss.GeneratorPowerUpFar, 0f, 0.4f*this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) * (1f - (this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle)* this.game.cameras[i].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle))), 1f);
 				}
 			}
 		}
@@ -46,24 +47,48 @@ public class PowerCycle : UpdatableAndDeletable
 		// Switch on or off.
 		if (this.progress < 1f)
 		{
-			this.progress = Mathf.Min(1f, this.progress + 0.008333334f);
+			this.progress = Mathf.Min(1f, this.progress + 0.006333334f);
 		}
 
 		if (this.game.cameras[0].room != null && this.game.cameras[0].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f)
         {
 			if (this.to == 1f)
 			{
-				if (this.progress > 0.2f)
+				if (this.progress > 0.3f)
 				{
 					this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(this.game.cameras[0].room.roomSettings.EffectColorA, this.game.cameras[0].room.roomSettings.EffectColorB);
+				}
+				else if (this.progress > 0.25f)
+				{
+					float flicker = Mathf.Sin(400 * progress);
+					if (flicker > 0.5)
+					{
+						this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(this.game.cameras[0].room.roomSettings.EffectColorA, this.game.cameras[0].room.roomSettings.EffectColorB);
+					}
+					else
+					{
+						this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(22, this.game.cameras[0].room.roomSettings.EffectColorB);
+					}
 				}
 			}
             else
 			{
-				if (this.progress > 0.8f)
+				if (this.progress > 0.9f)
 				{
-					this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(22, 22);
+					this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(22, this.game.cameras[0].room.roomSettings.EffectColorB);
 				}
+				else if (this.progress > 0.85f)
+                {
+					float flicker = Mathf.Sin(400 * progress);
+					if (flicker > 0.5)
+                    {
+						this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(this.game.cameras[0].room.roomSettings.EffectColorA, this.game.cameras[0].room.roomSettings.EffectColorB);
+					}
+                    else
+                    {
+						this.game.cameras[0].ApplyEffectColorsToAllPaletteTextures(22, this.game.cameras[0].room.roomSettings.EffectColorB);
+					}
+                }
 			}
 		}
 		
@@ -73,14 +98,36 @@ public class PowerCycle : UpdatableAndDeletable
 		{
 			for (int j = 0; j < this.game.cameras.Length; j++)
 			{
+				this.game.cameras[j].virtualMicrophone.volumeGroups[2] = this.power;
 				if (this.game.cameras[j].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f)
 				{
 						this.game.cameras[j].room.ScreenMovement(null, new Vector2(0f, 0f), this.game.cameras[j].room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) * 0.2f * Mathf.Sin(this.progress * 3.1415927f));
 				}
 			}
+		}else if (this.progress == 1f)
+		{
+			for (int j = 0; j < this.game.cameras.Length; j++)
+			{
+				this.game.cameras[j].virtualMicrophone.volumeGroups[2] = this.power;
+			}
 		}
 	}
 
+	public int timeTillNextPowerCycle
+    {
+        get
+        {
+			return counter;
+        }
+    }
+
+	public float linearPower
+    {
+		get 
+		{ 
+			return Mathf.Lerp(this.from, this.to, this.progress);
+		}
+    }
 
 	public float power
 	{

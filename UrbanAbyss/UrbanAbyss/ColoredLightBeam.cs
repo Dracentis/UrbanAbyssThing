@@ -146,6 +146,22 @@ public class ColoredLightBeam : UpdatableAndDeletable, IDrawable
 		if (base.slatedForDeletetion || this.room != rCam.room)
 		{
 			sLeaser.CleanSpritesAndRemove();
+        }
+        else if (!(this.placedObject.data as LightBeam.LightBeamData).sun)
+        {
+			if (this.room != null && this.room.roomSettings.GetEffectAmount(EnumExt_UrbanAbyss.PowerCycle) > 0f && UrbanAbyss.powerCycle != null)
+			{
+				if (UrbanAbyss.powerCycle.linearPower < 1f && UrbanAbyss.powerCycle.linearPower > 0f)
+				{
+					float flicker = Mathf.Clamp(UrbanAbyss.powerCycle.linearPower * 2f - Mathf.PerlinNoise(this.verts[0].x*100f, this.verts[0].y*100f), 0f, 1f);
+					flicker = flicker + (Mathf.Pow(flicker, 0.1f) * (1f - flicker) * Mathf.Pow(Mathf.Sin(30f / (flicker + 0.4f)), 2f));
+					sLeaser.sprites[0].alpha = flicker * sLeaser.sprites[0].alpha;
+				}
+				else if (UrbanAbyss.powerCycle.linearPower == 0f)
+				{
+					sLeaser.sprites[0].alpha = 0f;
+				}
+			}
 		}
 	}
 
